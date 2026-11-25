@@ -176,6 +176,7 @@ class _ContactSectionState extends ConsumerState<ContactSection> {
       padding: const EdgeInsets.all(28),
       child: Form(
         key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -185,25 +186,60 @@ class _ContactSectionState extends ConsumerState<ContactSection> {
                     fontWeight: FontWeight.bold,
                   ),
             ),
+            const SizedBox(height: 8),
+            const Text(
+              'Fill in your details below to send an inquiry directly to Kr5273860@gmail.com.',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
             const SizedBox(height: 20),
             _buildTextField(
               controller: _nameController,
               label: 'Your Name',
-              hint: 'e.g. Alex Morgan',
+              hint: 'e.g. John Doe',
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your name';
+                }
+                if (value.trim().length < 2) {
+                  return 'Name must be at least 2 characters long';
+                }
+                if (!RegExp(r"^[a-zA-Z\s.'-]+$").hasMatch(value.trim())) {
+                  return 'Please enter a valid name (letters only)';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _emailController,
               label: 'Your Email',
-              hint: 'e.g. alex@company.com',
-              isEmail: true,
+              hint: 'e.g. john@example.com',
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your email address';
+                }
+                if (!RegExp(r'^[\w\.-]+@([\w-]+\.)+[\w-]{2,6}$').hasMatch(value.trim())) {
+                  return 'Please enter a valid email address';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 16),
             _buildTextField(
               controller: _messageController,
               label: 'Message / Project Details',
-              hint: 'Tell me about your app requirements or role...',
+              hint: 'Tell me about your app requirements, timelines, or role...',
               maxLines: 4,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Please enter your message';
+                }
+                if (value.trim().length < 10) {
+                  return 'Message must be at least 10 characters long';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 24),
             _HoverableSubmitButton(
@@ -220,11 +256,13 @@ class _ContactSectionState extends ConsumerState<ContactSection> {
     required String label,
     required String hint,
     int maxLines = 1,
-    bool isEmail = false,
+    TextInputType? keyboardType,
+    required String? Function(String?) validator,
   }) {
     return TextFormField(
       controller: controller,
       maxLines: maxLines,
+      keyboardType: keyboardType,
       style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         labelText: label,
@@ -246,19 +284,18 @@ class _ContactSectionState extends ConsumerState<ContactSection> {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppTheme.primary, width: 1.5),
         ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFEF4444)),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+        ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return 'Please enter $label';
-        }
-        if (isEmail &&
-            !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value.trim())) {
-          return 'Please enter a valid email address';
-        }
-        return null;
-      },
+      validator: validator,
     );
   }
 }
