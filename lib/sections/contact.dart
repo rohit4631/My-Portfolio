@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../core/theme.dart';
 import '../core/responsive.dart';
 import '../widgets/glass_container.dart';
@@ -167,40 +166,6 @@ class _ContactSectionState extends ConsumerState<ContactSection> {
           title: 'Location',
           subtitle: 'Kangra, Himachal Pradesh 176001, India',
           url: 'https://maps.google.com/?q=Kangra,+Himachal+Pradesh',
-        ),
-        const SizedBox(height: 14),
-        _HoverableContactCard(
-          icon: Icons.language_outlined,
-          title: 'Portfolio Website',
-          subtitle: 'rohit4631-portfolio.vercel.app',
-          url: 'https://rohit4631-portfolio.vercel.app',
-        ),
-        const SizedBox(height: 32),
-        Text(
-          'Connect on Socials',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            _HoverableSocialIcon(
-              icon: FontAwesomeIcons.github,
-              url: 'https://github.com/rohit4631',
-            ),
-            const SizedBox(width: 14),
-            _HoverableSocialIcon(
-              icon: FontAwesomeIcons.linkedinIn,
-              url: 'https://linkedin.com/in/rohit4631',
-            ),
-            const SizedBox(width: 14),
-            _HoverableSocialIcon(
-              icon: FontAwesomeIcons.envelope,
-              url: 'mailto:Kr5273860@gmail.com?subject=Portfolio%20Inquiry',
-            ),
-          ],
         ),
       ],
     );
@@ -398,71 +363,6 @@ class _HoverableContactCardState extends State<_HoverableContactCard> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HoverableSocialIcon extends StatefulWidget {
-  final dynamic icon;
-  final String url;
-
-  const _HoverableSocialIcon({required this.icon, required this.url});
-
-  @override
-  State<_HoverableSocialIcon> createState() => _HoverableSocialIconState();
-}
-
-class _HoverableSocialIconState extends State<_HoverableSocialIcon> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      child: GestureDetector(
-        onTap: () async {
-          final uri = Uri.parse(widget.url);
-          if (await canLaunchUrl(uri)) {
-            await launchUrl(uri, mode: LaunchMode.externalApplication);
-          }
-        },
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: _isHovered
-                ? AppTheme.primary
-                : AppTheme.cardBackground,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: _isHovered
-                  ? AppTheme.primary
-                  : AppTheme.glassBorder,
-            ),
-            boxShadow: _isHovered
-                ? [
-                    BoxShadow(
-                      color: AppTheme.primary.withValues(alpha: 0.4),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    ),
-                  ]
-                : [],
-          ),
-          child: (widget.icon is FaIconData)
-              ? FaIcon(
-                  widget.icon as FaIconData,
-                  color: Colors.white,
-                  size: 18,
-                )
-              : Icon(
-                  widget.icon as IconData,
-                  color: Colors.white,
-                  size: 18,
-                ),
         ),
       ),
     );

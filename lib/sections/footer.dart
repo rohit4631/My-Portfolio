@@ -36,13 +36,6 @@ class FooterSection extends StatelessWidget {
                 'mailto:Kr5273860@gmail.com?subject=Portfolio%20Inquiry',
                 tooltip: 'Email',
               ),
-              const SizedBox(width: 16),
-              _socialIcon(
-                Icons.language,
-                'https://rohit4631-portfolio.vercel.app',
-                tooltip: 'Portfolio',
-                isMaterialIcon: true,
-              ),
             ],
           ),
           const SizedBox(height: 24),
