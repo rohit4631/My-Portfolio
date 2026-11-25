@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:visibility_detector/visibility_detector.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../core/theme.dart';
 import '../core/responsive.dart';
 import '../widgets/glass_container.dart';
@@ -76,7 +74,9 @@ class ProjectsSection extends ConsumerWidget {
                 crossAxisCount: isMobile
                     ? 1
                     : (ResponsiveLayout.isTablet(context) ? 2 : 3),
-                childAspectRatio: isMobile ? 0.72 : 0.74,
+                childAspectRatio: isMobile
+                    ? 1.05
+                    : (ResponsiveLayout.isTablet(context) ? 0.95 : 0.98),
                 crossAxisSpacing: 24,
                 mainAxisSpacing: 24,
               ),
@@ -156,8 +156,8 @@ class ProjectsSection extends ConsumerWidget {
                 ),
                 // Category Chip
                 Positioned(
-                  top: 14,
-                  left: 14,
+                  top: 12,
+                  left: 12,
                   child: Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -182,36 +182,36 @@ class ProjectsSection extends ConsumerWidget {
 
           // Content body
           Expanded(
-            flex: 6,
+            flex: 5,
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(18.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     project.title,
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          fontSize: 19,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Expanded(
                     child: Text(
                       project.description,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontSize: 13.5,
-                            height: 1.5,
+                            fontSize: 13,
+                            height: 1.45,
                             color: const Color(0xFFCBD5E1),
                           ),
-                      maxLines: 4,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 10),
                   // Tech Tags
                   Wrap(
                     spacing: 6,
@@ -236,61 +236,6 @@ class ProjectsSection extends ConsumerWidget {
                         ),
                       );
                     }).toList(),
-                  ),
-                  const SizedBox(height: 14),
-                  // Links / Details
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      InkWell(
-                        onTap: () async {
-                          final uri = Uri.parse(project.githubLink);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri,
-                                mode: LaunchMode.externalApplication);
-                          }
-                        },
-                        child: Row(
-                          children: const [
-                            FaIcon(FontAwesomeIcons.github,
-                                size: 14, color: AppTheme.primary),
-                            SizedBox(width: 6),
-                            Text(
-                              'GitHub',
-                              style: TextStyle(
-                                color: AppTheme.primary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          final uri = Uri.parse(project.previewLink);
-                          if (await canLaunchUrl(uri)) {
-                            await launchUrl(uri,
-                                mode: LaunchMode.externalApplication);
-                          }
-                        },
-                        child: Row(
-                          children: const [
-                            Text(
-                              'Details',
-                              style: TextStyle(
-                                color: AppTheme.secondary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(Icons.arrow_forward,
-                                size: 14, color: AppTheme.secondary),
-                          ],
-                        ),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -318,14 +263,14 @@ class ProjectsSection extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.phone_android_rounded,
-                size: 36, color: Colors.white),
-            const SizedBox(height: 8),
+                size: 32, color: Colors.white),
+            const SizedBox(height: 6),
             Text(
               project.title,
               style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
-                fontSize: 16,
+                fontSize: 15,
               ),
               textAlign: TextAlign.center,
             ),
