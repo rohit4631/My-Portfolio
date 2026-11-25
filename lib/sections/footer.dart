@@ -19,42 +19,84 @@ class FooterSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _socialIcon(FontAwesomeIcons.linkedin, 'https://linkedin.com/in/rohit4631'),
-              const SizedBox(width: 20),
-              _socialIcon(FontAwesomeIcons.github, 'https://github.com/rohit4631'),
-              const SizedBox(width: 20),
-              _socialIcon(FontAwesomeIcons.instagram, 'https://www.instagram.com/_rohit.____01'),
-              const SizedBox(width: 20),
-              _socialIcon(FontAwesomeIcons.envelope, 'mailto:kr5273860@gmail.com?subject=Portfolio%20Inquiry'),
+              _socialIcon(
+                FontAwesomeIcons.github,
+                'https://github.com/rohit4631',
+                tooltip: 'GitHub',
+              ),
+              const SizedBox(width: 16),
+              _socialIcon(
+                FontAwesomeIcons.linkedinIn,
+                'https://linkedin.com/in/rohit4631',
+                tooltip: 'LinkedIn',
+              ),
+              const SizedBox(width: 16),
+              _socialIcon(
+                FontAwesomeIcons.envelope,
+                'mailto:Kr5273860@gmail.com?subject=Portfolio%20Inquiry',
+                tooltip: 'Email',
+              ),
+              const SizedBox(width: 16),
+              _socialIcon(
+                Icons.language,
+                'https://rohit4631-portfolio.vercel.app',
+                tooltip: 'Portfolio',
+                isMaterialIcon: true,
+              ),
             ],
           ),
-          const SizedBox(height: 30),
-          Text(
-            'Built with Flutter ❤️',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontSize: 18, color: Colors.white),
+          const SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Engineered with Flutter & Dart',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 15,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
+              const SizedBox(width: 6),
+              const Icon(Icons.favorite, color: Color(0xFFEF4444), size: 16),
+            ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Text(
-            '© ${DateTime.now().year} Rohit. All Rights Reserved.',
-            style: Theme.of(context).textTheme.bodyMedium,
+            '© ${DateTime.now().year} Rohit Kumar • Kangra, HP, India. All Rights Reserved.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: 13,
+                  color: AppTheme.textSecondary,
+                ),
+            textAlign: TextAlign.center,
           ),
         ],
       ),
     );
   }
 
-  Widget _socialIcon(dynamic icon, String url) {
-    return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: GlassContainer(
-        padding: const EdgeInsets.all(12),
-        borderRadius: 50,
-        child: FaIcon(icon, color: Colors.white, size: 20),
+  Widget _socialIcon(
+    dynamic icon,
+    String url, {
+    required String tooltip,
+    bool isMaterialIcon = false,
+  }) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: () async {
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
+        child: GlassContainer(
+          padding: const EdgeInsets.all(12),
+          borderRadius: 50,
+          child: isMaterialIcon
+              ? Icon(icon as IconData, color: Colors.white, size: 18)
+              : FaIcon(icon as FaIconData, color: Colors.white, size: 18),
+        ),
       ),
     );
   }

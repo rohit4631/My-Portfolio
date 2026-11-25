@@ -12,7 +12,7 @@ import '../sections/footer.dart';
 import '../widgets/animated_background.dart';
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
@@ -29,10 +29,21 @@ class _HomePageState extends ConsumerState<HomePage> {
   final GlobalKey _projectsKey = GlobalKey();
   final GlobalKey _contactKey = GlobalKey();
 
+  bool _hasPrecached = false;
+
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasPrecached) {
+      _hasPrecached = true;
+      precacheImage(const AssetImage('assets/images/profile.jpg'), context);
+    }
   }
 
   @override
@@ -43,23 +54,38 @@ class _HomePageState extends ConsumerState<HomePage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels < 300) {
-      if (ref.read(activeSectionProvider) != 0) ref.read(activeSectionProvider.notifier).state = 0;
+    if (!_scrollController.hasClients) return;
+
+    if (_scrollController.position.pixels < 250) {
+      if (ref.read(activeSectionProvider) != 0) {
+        ref.read(activeSectionProvider.notifier).state = 0;
+      }
       return;
     }
-    
 
-    final keys = [_heroKey, _aboutKey, _skillsKey, _experienceKey, _projectsKey, _contactKey];
+    final keys = [
+      _heroKey,
+      _aboutKey,
+      _skillsKey,
+      _experienceKey,
+      _projectsKey,
+      _contactKey,
+    ];
     for (int i = keys.length - 1; i >= 0; i--) {
       final key = keys[i];
       if (key.currentContext != null) {
-        final renderBox = key.currentContext!.findRenderObject() as RenderBox;
-        final position = renderBox.localToGlobal(Offset.zero, ancestor: context.findRenderObject());
-        if (position.dy <= 150) {
-          if (ref.read(activeSectionProvider) != i) {
-            ref.read(activeSectionProvider.notifier).state = i;
+        final renderBox = key.currentContext!.findRenderObject() as RenderBox?;
+        if (renderBox != null && renderBox.hasSize) {
+          final position = renderBox.localToGlobal(
+            Offset.zero,
+            ancestor: context.findRenderObject(),
+          );
+          if (position.dy <= 180) {
+            if (ref.read(activeSectionProvider) != i) {
+              ref.read(activeSectionProvider.notifier).state = i;
+            }
+            break;
           }
-          break;
         }
       }
     }
@@ -90,35 +116,44 @@ class _HomePageState extends ConsumerState<HomePage> {
     }
 
     if (targetKey != null && targetKey.currentContext != null) {
-      final RenderBox renderBox = targetKey.currentContext!.findRenderObject() as RenderBox;
-      final offset = renderBox.localToGlobal(Offset.zero, ancestor: context.findRenderObject()).dy;
-      
+      final RenderBox? renderBox =
+          targetKey.currentContext!.findRenderObject() as RenderBox?;
+      if (renderBox != null && renderBox.hasSize) {
+        final offset = renderBox
+            .localToGlobal(Offset.zero, ancestor: context.findRenderObject())
+            .dy;
 
-      final isMobile = MediaQuery.of(context).size.width < 800;
-      final topPadding = MediaQuery.of(context).padding.top;
-      final headerOffset = isMobile ? 80.0 + topPadding : 80.0;
-      
-      _scrollController.animateTo(
-        (_scrollController.offset + offset - headerOffset).clamp(0.0, _scrollController.position.maxScrollExtent),
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutCubic,
-      );
+        final isMobile = MediaQuery.of(context).size.width < 800;
+        final topPadding = MediaQuery.of(context).padding.top;
+        final headerOffset = isMobile ? 75.0 + topPadding : 75.0;
+
+        _scrollController.animateTo(
+          (_scrollController.offset + offset - headerOffset)
+              .clamp(0.0, _scrollController.position.maxScrollExtent),
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor:
-          Colors.transparent,
+      backgroundColor: Colors.transparent,
       body: AnimatedBackground(
         child: Stack(
           children: [
             SingleChildScrollView(
               controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 children: [
-                  HeroSection(key: _heroKey),
+                  HeroSection(
+                    key: _heroKey,
+                    onViewProjects: () => _scrollToSection(4),
+                    onContactTap: () => _scrollToSection(5),
+                  ),
                   AboutSection(key: _aboutKey),
                   SkillsSection(key: _skillsKey),
                   ExperienceSection(key: _experienceKey),

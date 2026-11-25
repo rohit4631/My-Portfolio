@@ -1,69 +1,125 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../core/theme.dart';
 
 class AnimatedBackground extends StatefulWidget {
   final Widget child;
 
-  const AnimatedBackground({Key? key, required this.child}) : super(key: key);
+  const AnimatedBackground({super.key, required this.child});
 
   @override
   State<AnimatedBackground> createState() => _AnimatedBackgroundState();
 }
 
 class _AnimatedBackgroundState extends State<AnimatedBackground> {
-  Offset _mousePos = Offset.zero;
+  final ValueNotifier<Offset> _mousePos =
+      ValueNotifier(const Offset(-400, -400));
+
+  @override
+  void dispose() {
+    _mousePos.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       onHover: (event) {
-        setState(() {
-          _mousePos = event.localPosition;
-        });
+        _mousePos.value = event.localPosition;
       },
       child: Stack(
         children: [
-          // Base solid background
-          Container(
-            color: AppTheme.background,
-          ),
-          
-          // Glowing following bubble
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOutCubic,
-            left: _mousePos.dx - 150, // Center the 300x300 bubble
-            top: _mousePos.dy - 150,
-            child: Container(
-              width: 300,
-              height: 300,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(
-                  colors: [
-                    AppTheme.primary.withOpacity(0.6),
-                    AppTheme.secondary.withOpacity(0.3),
-                    Colors.transparent,
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
+          // Background layer isolated with RepaintBoundary
+          RepaintBoundary(
+            child: Stack(
+              children: [
+                // Base background color
+                Container(
+                  color: AppTheme.background,
                 ),
-              ),
+
+                // Top-right static ambient glow (Purple)
+                Positioned(
+                  top: -150,
+                  right: -150,
+                  child: IgnorePointer(
+                    child: Container(
+                      width: 550,
+                      height: 550,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            AppTheme.primary.withValues(alpha: 0.18),
+                            AppTheme.primary.withValues(alpha: 0.05),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.0, 0.4, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Center-left static ambient glow (Blue)
+                Positioned(
+                  top: 700,
+                  left: -180,
+                  child: IgnorePointer(
+                    child: Container(
+                      width: 600,
+                      height: 600,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            AppTheme.secondary.withValues(alpha: 0.15),
+                            AppTheme.secondary.withValues(alpha: 0.04),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.0, 0.45, 1.0],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Interactive glowing orb that tracks mouse cursor smoothly
+                ValueListenableBuilder<Offset>(
+                  valueListenable: _mousePos,
+                  builder: (context, pos, _) {
+                    return AnimatedPositioned(
+                      duration: const Duration(milliseconds: 120),
+                      curve: Curves.easeOutCubic,
+                      left: pos.dx - 225,
+                      top: pos.dy - 225,
+                      child: IgnorePointer(
+                        child: Container(
+                          width: 450,
+                          height: 450,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                AppTheme.primary.withValues(alpha: 0.22),
+                                AppTheme.secondary.withValues(alpha: 0.10),
+                                Colors.transparent,
+                              ],
+                              stops: const [0.0, 0.4, 1.0],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
-          
-          // Blur layer over the bubble to make it smooth and diffuse
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
-              child: Container(
-                color: Colors.transparent,
-              ),
-            ),
+
+          // Foreground child in its own RepaintBoundary for smooth 60/120fps scrolling
+          RepaintBoundary(
+            child: widget.child,
           ),
-          
-          // Foreground content
-          widget.child,
         ],
       ),
     );

@@ -7,169 +7,291 @@ import '../core/theme.dart';
 import '../core/responsive.dart';
 
 class HeroSection extends StatelessWidget {
-  const HeroSection({Key? key}) : super(key: key);
+  final VoidCallback? onViewProjects;
+  final VoidCallback? onContactTap;
+
+  const HeroSection({
+    super.key,
+    this.onViewProjects,
+    this.onContactTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    bool isMobile = ResponsiveLayout.isMobile(context);
+    final bool isMobile = ResponsiveLayout.isMobile(context);
     final topPadding = MediaQuery.of(context).padding.top;
-    
+
     return Container(
       constraints: BoxConstraints(
-        minHeight: isMobile ? MediaQuery.of(context).size.height * 0.85 : MediaQuery.of(context).size.height
+        minHeight: isMobile
+            ? MediaQuery.of(context).size.height * 0.90
+            : MediaQuery.of(context).size.height * 0.92,
       ),
       padding: EdgeInsets.only(
-        left: isMobile ? 16 : 80,
-        right: isMobile ? 16 : 80,
-        top: isMobile ? (80 + topPadding) : 100,
+        left: isMobile ? 20 : 80,
+        right: isMobile ? 20 : 80,
+        top: isMobile ? (70 + topPadding) : 100,
         bottom: isMobile ? 40 : 60,
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
+            // Availability badge
             Container(
-              width: isMobile ? 150 : 180,
-              height: isMobile ? 150 : 180,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primary.withOpacity(0.5),
-                    blurRadius: 50,
-                    spreadRadius: 10,
+                color: const Color(0x1A10B981),
+                border: Border.all(color: const Color(0x6610B981)),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF10B981),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Available for Full-time & Remote Roles',
+                    style: TextStyle(
+                      color: Color(0xFF34D399),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
                   ),
                 ],
               ),
-              child: CircleAvatar(
-                radius: isMobile ? 75 : 90,
-                backgroundColor: AppTheme.background,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(90),
-                  child: Image.asset(
-                    'assets/images/profile.jpg',
-                    width: isMobile ? 150 : 180,
-                    height: isMobile ? 150 : 180,
-                    fit: BoxFit.cover,
+            ).animate().fadeIn(duration: 400.ms).slideY(begin: -0.2, end: 0),
+
+            SizedBox(height: isMobile ? 24 : 32),
+
+            // Profile Avatar with Glowing Border
+            Container(
+              width: isMobile ? 140 : 170,
+              height: isMobile ? 140 : 170,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: AppTheme.primaryGradient,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppTheme.primary.withValues(alpha: 0.4),
+                    blurRadius: 36,
+                    spreadRadius: 4,
                   ),
+                ],
+              ),
+              padding: const EdgeInsets.all(4),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: Image.asset(
+                  'assets/images/profile.jpg',
+                  width: isMobile ? 140 : 170,
+                  height: isMobile ? 140 : 170,
+                  fit: BoxFit.cover,
+                  frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                    if (wasSynchronouslyLoaded || frame != null) return child;
+                    return Container(
+                      color: AppTheme.background,
+                      child: const Center(
+                        child: Text(
+                          'R',
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: AppTheme.background,
+                      child: const Center(
+                        child: Text(
+                          'R',
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
-            ).animate(onPlay: (controller) => controller.repeat(reverse: true))
-             .moveY(begin: -10, end: 10, duration: 2.seconds, curve: Curves.easeInOut),
-             
-            SizedBox(height: isMobile ? 30 : 40),
-            
+            )
+                .animate(onPlay: (controller) => controller.repeat(reverse: true))
+                .moveY(begin: -6, end: 6, duration: 2500.ms, curve: Curves.easeInOut),
+
+            SizedBox(height: isMobile ? 24 : 32),
+
+            // Main Name Header
             Text(
-              "Hi, I'm Rohit 👋",
-              style: Theme.of(context).textTheme.displayMedium?.copyWith(
-                fontSize: isMobile ? 32 : null,
-                fontWeight: FontWeight.bold,
-              ),
+              "Hi, I'm Rohit",
+              style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                    fontSize: isMobile ? 36 : 52,
+                    fontWeight: FontWeight.w800,
+                  ),
               textAlign: TextAlign.center,
-            ).animate().fadeIn(duration: 600.ms).slideY(begin: 0.3, end: 0),
-            
-            SizedBox(height: isMobile ? 12 : 16),
-            
+            ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.2, end: 0),
+
+            const SizedBox(height: 12),
+
+            // Animated typewriter title
             ShaderMask(
-              shaderCallback: (bounds) => AppTheme.primaryGradient.createShader(bounds),
+              shaderCallback: (bounds) =>
+                  AppTheme.primaryGradient.createShader(bounds),
               child: DefaultTextStyle(
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: Colors.white,
-                  fontSize: isMobile ? 24 : null,
-                  fontWeight: FontWeight.bold,
-                ) ?? const TextStyle(),
+                          color: Colors.white,
+                          fontSize: isMobile ? 20 : 28,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.2,
+                        ) ??
+                    const TextStyle(),
                 textAlign: TextAlign.center,
                 child: AnimatedTextKit(
                   animatedTexts: [
-                    TypewriterAnimatedText('Flutter Developer', speed: const Duration(milliseconds: 100)),
-                    TypewriterAnimatedText('Android & iOS Mobile App Engineer', speed: const Duration(milliseconds: 100)),
-                    TypewriterAnimatedText('Web Developer', speed: const Duration(milliseconds: 100)),
-                    TypewriterAnimatedText('UI/UX Enthusiast', speed: const Duration(milliseconds: 100)),
+                    TypewriterAnimatedText(
+                      'Flutter Developer | Android & iOS',
+                      speed: const Duration(milliseconds: 70),
+                    ),
+                    TypewriterAnimatedText(
+                      'Cross-Platform Mobile Applications',
+                      speed: const Duration(milliseconds: 70),
+                    ),
+                    TypewriterAnimatedText(
+                      'Location Tracking & Real-Time WebSockets',
+                      speed: const Duration(milliseconds: 70),
+                    ),
+                    TypewriterAnimatedText(
+                      'HRMS, Logistics & Consumer Apps Specialist',
+                      speed: const Duration(milliseconds: 70),
+                    ),
                   ],
                   repeatForever: true,
-                  pause: const Duration(milliseconds: 1500),
+                  pause: const Duration(milliseconds: 1400),
                   displayFullTextOnTap: true,
                   stopPauseOnTap: true,
                 ),
               ),
-            ).animate(delay: 200.ms).fadeIn(duration: 600.ms).slideY(begin: 0.3, end: 0),
-            
-            SizedBox(height: isMobile ? 16 : 24),
-            
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: isMobile ? 8 : 100),
+            ).animate(delay: 150.ms).fadeIn(duration: 400.ms),
+
+            const SizedBox(height: 16),
+
+            // Professional summary line
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 720),
               child: Text(
-                'Passionate Flutter Developer with 2+ years of experience building scalable, high-performance Android, iOS, and Web applications using Flutter and Dart.',
+                '2+ years of professional experience building scalable cross-platform mobile applications for Android & iOS. Proven track record across HRMS, retail, logistics and matchmaking domains with clean architecture, live tracking, and seamless API integrations.',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  fontSize: isMobile ? 15 : null,
-                  height: isMobile ? 1.5 : null,
-                  color: Colors.white.withOpacity(0.8),
-                ),
+                      fontSize: isMobile ? 15 : 17,
+                      height: 1.6,
+                      color: const Color(0xFFCBD5E1),
+                    ),
                 textAlign: TextAlign.center,
               ),
-            ).animate(delay: 400.ms).fadeIn(duration: 600.ms).slideY(begin: 0.3, end: 0),
-            
-            SizedBox(height: isMobile ? 24 : 30),
-            
+            ).animate(delay: 200.ms).fadeIn(duration: 400.ms),
+
+            SizedBox(height: isMobile ? 28 : 36),
+
+            // Call to action buttons
+            Wrap(
+              spacing: 16,
+              runSpacing: 14,
+              alignment: WrapAlignment.center,
+              children: [
+                _actionButton(
+                  context: context,
+                  label: 'Explore Projects',
+                  icon: Icons.cases_outlined,
+                  isPrimary: true,
+                  onTap: onViewProjects,
+                ),
+                _actionButton(
+                  context: context,
+                  label: 'Get In Touch',
+                  icon: Icons.mail_outline,
+                  isPrimary: false,
+                  onTap: onContactTap,
+                ),
+              ],
+            ).animate(delay: 250.ms).fadeIn(duration: 400.ms),
+
+            SizedBox(height: isMobile ? 24 : 32),
+
+            // Social Icons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _socialIcon(FontAwesomeIcons.github, 'https://github.com/rohit4631'),
-                const SizedBox(width: 20),
-                _socialIcon(FontAwesomeIcons.linkedin, 'https://linkedin.com/in/rohit4631'),
-                const SizedBox(width: 20),
-                _socialIcon(FontAwesomeIcons.instagram, 'https://www.instagram.com/_rohit.____01'),
+                _socialIcon(
+                  FontAwesomeIcons.github,
+                  'https://github.com/rohit4631',
+                  tooltip: 'GitHub',
+                ),
+                const SizedBox(width: 16),
+                _socialIcon(
+                  FontAwesomeIcons.linkedinIn,
+                  'https://linkedin.com/in/rohit4631',
+                  tooltip: 'LinkedIn',
+                ),
+                const SizedBox(width: 16),
+                _socialIcon(
+                  FontAwesomeIcons.envelope,
+                  'mailto:Kr5273860@gmail.com?subject=Portfolio%20Inquiry',
+                  tooltip: 'Email',
+                ),
               ],
-            ).animate(delay: 600.ms).fadeIn(duration: 600.ms).slideY(begin: 0.3, end: 0),
+            ).animate(delay: 300.ms).fadeIn(duration: 400.ms),
 
-              const SizedBox(height: 40),
-              Column(
-                children: [
-                  Text(
-                    "Scroll Down",
-                    style: TextStyle(
-                      color: AppTheme.primary.withOpacity(0.8),
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
+            const SizedBox(height: 36),
+
+            // Quick Scroll Down Indicator
+            Column(
+              children: [
+                Text(
+                  "SCROLL TO EXPLORE",
+                  style: TextStyle(
+                    color: AppTheme.primary.withValues(alpha: 0.9),
+                    fontSize: 11,
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.w600,
                   ),
-                  const SizedBox(height: 8),
-                  Icon(Icons.keyboard_arrow_down, color: AppTheme.primary, size: 28)
-                    .animate(onPlay: (controller) => controller.repeat(reverse: true))
-                    .moveY(begin: -4, end: 4, duration: 1.seconds, curve: Curves.easeInOut),
-                ],
-              ).animate(delay: 1000.ms).fadeIn(duration: 800.ms),
-            ],
+                ),
+                const SizedBox(height: 6),
+                Icon(
+                  Icons.keyboard_arrow_down,
+                  color: AppTheme.primary,
+                  size: 24,
+                )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .moveY(begin: -3, end: 3, duration: 900.ms, curve: Curves.easeInOut),
+              ],
+            ).animate(delay: 400.ms).fadeIn(duration: 400.ms),
+          ],
         ),
       ),
     );
   }
 
-  Widget _socialIcon(dynamic icon, String url) {
+  Widget _actionButton({
+    required BuildContext context,
+    required String label,
+    required IconData icon,
+    required bool isPrimary,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      },
-      borderRadius: BorderRadius.circular(50),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppTheme.cardBackground,
-          border: Border.all(color: AppTheme.glassBorder),
-        ),
-        child: FaIcon(icon, color: Colors.white, size: 24),
-      ),
-    );
-  }
-
-  Widget _ctaButton(BuildContext context, String text, IconData icon, bool isPrimary) {
-    return InkWell(
-      onTap: () {}, // Add navigation or download logic here
+      onTap: onTap,
       borderRadius: BorderRadius.circular(30),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -177,21 +299,57 @@ class HeroSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(30),
           gradient: isPrimary ? AppTheme.primaryGradient : null,
           color: isPrimary ? null : AppTheme.cardBackground,
-          border: isPrimary ? null : Border.all(color: AppTheme.glassBorder),
+          border: isPrimary
+              ? null
+              : Border.all(color: AppTheme.primary.withValues(alpha: 0.4)),
           boxShadow: isPrimary
-              ? [BoxShadow(color: AppTheme.primary.withOpacity(0.4), blurRadius: 10, offset: const Offset(0, 4))]
-              : [],
+              ? [
+                  BoxShadow(
+                    color: AppTheme.primary.withValues(alpha: 0.35),
+                    blurRadius: 16,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(icon, size: 18, color: Colors.white),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Text(
-              text,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w600,
+                fontSize: 15,
+              ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _socialIcon(dynamic icon, String url, {required String tooltip}) {
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        onTap: () async {
+          final uri = Uri.parse(url);
+          if (await canLaunchUrl(uri)) {
+            await launchUrl(uri, mode: LaunchMode.externalApplication);
+          }
+        },
+        borderRadius: BorderRadius.circular(50),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppTheme.cardBackground,
+            border: Border.all(color: AppTheme.glassBorder),
+          ),
+          child: FaIcon(icon, color: Colors.white, size: 18),
         ),
       ),
     );

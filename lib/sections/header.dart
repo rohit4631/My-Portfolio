@@ -7,8 +7,8 @@ import '../viewmodels/visibility_viewmodel.dart';
 
 class HeaderNavigation extends ConsumerStatefulWidget {
   final Function(int) onNavTap;
-  
-  const HeaderNavigation({Key? key, required this.onNavTap}) : super(key: key);
+
+  const HeaderNavigation({super.key, required this.onNavTap});
 
   @override
   ConsumerState<HeaderNavigation> createState() => _HeaderNavigationState();
@@ -33,7 +33,8 @@ class _HeaderNavigationState extends ConsumerState<HeaderNavigation> {
   @override
   Widget build(BuildContext context) {
     final activeSection = ref.watch(activeSectionProvider);
-    final isMobile = ResponsiveLayout.isMobile(context);
+    final isDesktop = ResponsiveLayout.isDesktop(context);
+    final isCompact = !isDesktop;
     final topPadding = MediaQuery.of(context).padding.top;
 
     return Positioned(
@@ -44,27 +45,60 @@ class _HeaderNavigationState extends ConsumerState<HeaderNavigation> {
         children: [
           GlassContainer(
             borderRadius: 0,
-            blur: 15,
+            blur: 12,
             padding: EdgeInsets.only(
-              left: isMobile ? 16 : 24,
-              right: isMobile ? 8 : 24, // Less right padding on mobile to balance hamburger icon
-              top: (isMobile ? 12 : 16) + topPadding,
-              bottom: isMobile ? 12 : 16,
+              left: isCompact ? 16 : 32,
+              right: isCompact ? 8 : 32,
+              top: (isCompact ? 12 : 16) + topPadding,
+              bottom: isCompact ? 12 : 16,
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(left: isMobile ? 8 : 0),
-                  child: Text(
-                    'Rohit',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primary,
-                    ),
+                  padding: EdgeInsets.only(left: isCompact ? 8 : 0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          gradient: AppTheme.primaryGradient,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'RK',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            fontSize: 14,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Rohit',
+                        style:
+                            Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                      ),
+                      Text(
+                        '.dev',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.primary,
+                          fontSize: 18,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                if (!isMobile)
+                if (isDesktop)
                   Row(
                     children: [
                       _navLink('Home', 0, activeSection),
@@ -77,24 +111,24 @@ class _HeaderNavigationState extends ConsumerState<HeaderNavigation> {
                   )
                 else
                   IconButton(
-                    icon: Icon(_isMenuOpen ? Icons.close : Icons.menu, color: Colors.white),
+                    icon: Icon(_isMenuOpen ? Icons.close : Icons.menu,
+                        color: Colors.white),
                     onPressed: _toggleMenu,
                     splashRadius: 24,
                   ),
               ],
             ),
           ),
-          // Mobile dropdown menu
-          if (isMobile)
+          if (isCompact)
             AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              height: _isMenuOpen ? 400 : 0, // Increased height to comfortably fit all items including Contact
+              height: _isMenuOpen ? 360 : 0,
               width: double.infinity,
               child: ClipRRect(
                 child: GlassContainer(
                   borderRadius: 0,
-                  blur: 20,
+                  blur: 16,
                   child: SingleChildScrollView(
                     physics: const NeverScrollableScrollPhysics(),
                     child: Column(
@@ -120,27 +154,30 @@ class _HeaderNavigationState extends ConsumerState<HeaderNavigation> {
   Widget _navLink(String title, int index, int activeIndex) {
     final isActive = index == activeIndex;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       child: InkWell(
         onTap: () => _handleNavTap(index),
         borderRadius: BorderRadius.circular(20),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isActive ? AppTheme.primary : Colors.transparent,
-                width: 2,
-              ),
+            color: isActive
+                ? AppTheme.primary.withValues(alpha: 0.15)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isActive
+                  ? AppTheme.primary.withValues(alpha: 0.6)
+                  : Colors.transparent,
             ),
           ),
           child: Text(
             title,
             style: TextStyle(
-              color: isActive ? AppTheme.primary : Colors.white, 
-              fontSize: 16,
-              fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+              color: isActive ? Colors.white : AppTheme.textSecondary,
+              fontSize: 14,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
             ),
           ),
         ),
@@ -153,9 +190,11 @@ class _HeaderNavigationState extends ConsumerState<HeaderNavigation> {
     return InkWell(
       onTap: () => _handleNavTap(index),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         decoration: BoxDecoration(
-          color: isActive ? AppTheme.primary.withOpacity(0.1) : Colors.transparent,
+          color: isActive
+              ? AppTheme.primary.withValues(alpha: 0.12)
+              : Colors.transparent,
           border: Border(
             left: BorderSide(
               color: isActive ? AppTheme.primary : Colors.transparent,
@@ -167,7 +206,7 @@ class _HeaderNavigationState extends ConsumerState<HeaderNavigation> {
           title,
           style: TextStyle(
             color: isActive ? AppTheme.primary : Colors.white,
-            fontSize: 18,
+            fontSize: 16,
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
         ),

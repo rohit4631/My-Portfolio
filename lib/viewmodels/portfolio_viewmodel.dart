@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/skill.dart';
 import '../models/experience.dart';
 import '../models/project.dart';
+import '../models/education.dart';
 import '../repositories/portfolio_repository.dart';
 
 final portfolioRepositoryProvider = Provider<PortfolioRepository>((ref) {
@@ -21,4 +22,9 @@ final experiencesProvider = Provider<List<Experience>>((ref) {
 final projectsProvider = Provider<List<Project>>((ref) {
   final repo = ref.watch(portfolioRepositoryProvider);
   return repo.getProjects();
+});
+
+final educationProvider = Provider<List<Education>>((ref) {
+  final repo = ref.watch(portfolioRepositoryProvider);
+  return repo.getEducation();
 });
